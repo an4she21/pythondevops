@@ -24,17 +24,13 @@ pipeline {
         }
 
         stage('Test') {
-    steps {
-        bat """
-        python -m unittest discover -p "test_*.py"
-        """
-    }
-}
-
-        """
-    }
-}
-
+            steps {
+                bat """
+                cd tests
+                python -m unittest discover -p "test_*.py"
+                """
+            }
+        }
 
         stage('Docker Build') {
             steps {
