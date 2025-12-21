@@ -26,7 +26,11 @@ pipeline {
         stage('Test') {
     steps {
         bat """
-        python -m unittest discover -s src\\tests -p "test_*.py"
+        python -m unittest discover -p "test_*.py"
+        """
+    }
+}
+
         """
     }
 }
