@@ -17,15 +17,15 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps {
-                bat 'py -3.9 -m pip install --upgrade pip'
-                bat 'py -3.9 -m pip install -r src/requirements.txt'
+    steps {
+        bat 'python -m pip install --upgrade pip'
+        bat 'python -m pip install -r src/requirements.txt'
             }
         }
 
         stage('Test') {
-            steps {
-                bat 'py -3.9 -m unittest'
+    steps {
+        bat 'python -m unittest'
             }
         }
 
