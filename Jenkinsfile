@@ -23,11 +23,14 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        sstage('Test') {
     steps {
-        bat 'python -m unittest'
-            }
-        }
+        bat """
+        python -m unittest discover -s src\\tests -p "test_*.py"
+        """
+    }
+}
+
 
         stage('Docker Build') {
             steps {
