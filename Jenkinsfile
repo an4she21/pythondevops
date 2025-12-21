@@ -34,7 +34,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                bat 'docker build -f build/Dockerfile -t %IMAGE_NAME% .'
             }
         }
 
