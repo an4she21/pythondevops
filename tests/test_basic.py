@@ -4,7 +4,8 @@ import os
 import json
 
 # Add src directory to path so we can import the app
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, src_path)
 
 from app import create_app
 
@@ -14,9 +15,15 @@ class TestFlaskApp(unittest.TestCase):
     
     def setUp(self):
         """Set up test client before each test"""
-        self.app = create_app()
-        self.app.config['TESTING'] = True
-        self.client = self.app.test_client()
+        # Ensure we're in the src directory so Flask can find templates
+        original_cwd = os.getcwd()
+        try:
+            os.chdir(src_path)
+            self.app = create_app()
+            self.app.config['TESTING'] = True
+            self.client = self.app.test_client()
+        finally:
+            os.chdir(original_cwd)
     
     def test_home_page(self):
         """Test that home page returns 200 and contains expected content"""
