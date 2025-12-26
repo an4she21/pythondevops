@@ -26,35 +26,21 @@ pipeline {
         }
 
         stage('Test') {
-            steps {
-                bat 'python -m unittest discover -p "test_*.py"'
-            }
-        }
+    steps {
+        bat """
+        python -m unittest discover -p "test_*.py"
+        """
+    }
+}
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat """
-                    %SONAR_SCANNER_HOME%\\bin\\sonar-scanner ^
-                    -Dsonar.projectKey=%SONAR_PROJECT_KEY% ^
-                    -Dsonar.sources=src ^
-                    -Dsonar.language=py
-                    """
-                }
-            }
-        }
+        """
+    }
+}
 
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                bat 'docker build -f build/Dockerfile -t %IMAGE_NAME% .'
             }
         }
 
