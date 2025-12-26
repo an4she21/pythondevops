@@ -6,6 +6,8 @@ pipeline {
         CONTAINER_NAME = "pythonflask-container"
         HOST_PORT = "8081"
         CONTAINER_PORT = "5000"
+        SONAR_PROJECT_KEY = "pythondevops-project"
+        SONAR_SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
@@ -17,24 +19,38 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-    steps {
-        bat 'python -m pip install --upgrade pip'
-        bat 'python -m pip install -r src/requirements.txt'
+            steps {
+                bat 'python -m pip install --upgrade pip'
+                bat 'python -m pip install -r src/requirements.txt'
             }
         }
 
         stage('Test') {
-    steps {
-        bat """
-        python -m unittest discover -p "test_*.py"
-        """
-    }
-}
+            steps {
+                bat 'python -m unittest discover -p "test_*.py"'
+            }
+        }
 
-        """
-    }
-}
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat """
+                    %SONAR_SCANNER_HOME%\\bin\\sonar-scanner ^
+                    -Dsonar.projectKey=%SONAR_PROJECT_KEY% ^
+                    -Dsonar.sources=src ^
+                    -Dsonar.language=py
+                    """
+                }
+            }
+        }
 
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
 
         stage('Docker Build') {
             steps {
@@ -55,11 +71,10 @@ pipeline {
 
     post {
         success {
-            echo "🚀 Flask app deployed in Docker!"
+            echo "TP4 SUCCES : SonarQube + Tests + Docker"
         }
         failure {
-            echo "❌ Pipeline failed!"
+            echo " Pipeline "
         }
     }
 }
-
