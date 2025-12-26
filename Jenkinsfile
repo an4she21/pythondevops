@@ -7,7 +7,6 @@ pipeline {
         HOST_PORT = "8081"
         CONTAINER_PORT = "5000"
         SONAR_PROJECT_KEY = "pythondevops-project"
-        SONAR_SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
@@ -33,13 +32,16 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat """
-                    %SONAR_SCANNER_HOME%\\bin\\sonar-scanner ^
-                    -Dsonar.projectKey=%SONAR_PROJECT_KEY% ^
-                    -Dsonar.sources=src ^
-                    -Dsonar.language=py
-                    """
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        bat """
+                        ${scannerHome}\\bin\\sonar-scanner ^
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
+                        -Dsonar.sources=src ^
+                        -Dsonar.language=py
+                        """
+                    }
                 }
             }
         }
@@ -71,10 +73,10 @@ pipeline {
 
     post {
         success {
-            echo "TP4 SUCCES : SonarQube + Tests + Docker"
+            echo "TP4 SUCCESS : SonarQube + Tests + Docker"
         }
         failure {
-            echo " Pipeline "
+            echo " Pipeline FAILED"
         }
     }
 }
