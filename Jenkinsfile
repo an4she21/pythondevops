@@ -31,23 +31,20 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-    steps {
-        script {
-            def scannerHome = tool 'SonarScanner'
-            withSonarQubeEnv('SonarQube') {
-                bat """
-                "${scannerHome}\\bin\\sonar-scanner" ^
-                -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
-                -Dsonar.sources=src ^
-                -Dsonar.language=py ^
-                -Dsonar.python.version=3 ^
-                -Dsonar.sourceEncoding=UTF-8
-                """
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        bat """
+                        ${scannerHome}\\bin\\sonar-scanner ^
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
+                        -Dsonar.sources=src ^
+                        -Dsonar.language=py
+                        """
+                    }
+                }
             }
         }
-    }
-}
-
 
         stage('Quality Gate') {
             steps {
